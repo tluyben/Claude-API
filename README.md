@@ -162,15 +162,83 @@ To rename a chat conversation, you can use the rename_chat method:
     else:
         print("Failed to rename chat conversation")
 
+## Using the Wrapper
+
+To use the wrapper to make the API code-compatible with the official Claude API, you can use the `ClaudeWrapper` class from the `claude_wrapper` module.
+
+### Example with Text Input
+
+```python
+import os
+from claude_wrapper import ClaudeWrapper
+
+cookie = os.environ.get('cookie')
+client = ClaudeWrapper(cookie)
+
+message = client.messages.create(
+    model="claude-3-5-sonnet-20240620",
+    max_tokens=1000,
+    temperature=0,
+    system="You are a world-class poet. Respond only with short poems.",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Why is the ocean salty?"
+                }
+            ]
+        }
+    ]
+)
+print(message)
+```
+
+### Example with Image Input
+
+```python
+import os
+import base64
+import httpx
+from claude_wrapper import ClaudeWrapper
+
+cookie = os.environ.get('cookie')
+client = ClaudeWrapper(cookie)
+
+image1_url = "https://upload.wikimedia.org/wikipedia/commons/a/a7/Camponotus_flavomarginatus_ant.jpg"
+image1_media_type = "image/jpeg"
+image1_data = base64.b64encode(httpx.get(image1_url).content).decode("utf-8")
+
+message = client.messages.create(
+    model="claude-3-5-sonnet-20240620",
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": image1_media_type,
+                        "data": image1_data,
+                    },
+                },
+                {
+                    "type": "text",
+                    "text": "Describe this image."
+                }
+            ],
+        }
+    ],
+)
+print(message)
+```
+
 ## Disclaimer
 
 This project provides an unofficial API for Claude AI and is not affiliated with or endorsed by Claude AI or Anthropic. Use it at your own risk.
 
 Please refer to the official Claude AI documentation[https://claude.ai/docs] for more information on how to use Claude AI.
         
-    
-
-
-
-
-    
