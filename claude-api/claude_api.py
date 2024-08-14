@@ -11,6 +11,7 @@ class Client:
   def __init__(self, cookie):
     self.cookie = cookie
     self.organization_id = self.get_organization_id()
+    self.system_prompt_sent = False  # Track if system prompt has been sent
 
   def get_organization_id(self):
     url = "https://claude.ai/api/organizations"
@@ -74,7 +75,7 @@ class Client:
       print(f"Error: {response.status_code} - {response.text}")
 
   # Send Message to Claude
-  def send_message(self, prompt, conversation_id, attachment=None,timeout=500):
+  def send_message(self, prompt, conversation_id, attachment=None,timeout=500, system_prompt=None):
     url = "https://claude.ai/api/append_message"
 
     # Upload attachment if provided
@@ -89,6 +90,11 @@ class Client:
     # Ensure attachments is an empty list when no attachment is provided
     if not attachment:
       attachments = []
+
+    # Handle system prompt
+    if system_prompt and not self.system_prompt_sent:
+      prompt = f"{system_prompt}\n{prompt}"
+      self.system_prompt_sent = True
 
     payload = json.dumps({
       "completion": {
