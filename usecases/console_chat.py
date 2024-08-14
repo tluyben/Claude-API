@@ -24,8 +24,11 @@ def main():
         if not conversation_id:
             conversation = claude.create_new_chat()
             conversation_id = conversation['uuid']
+            system_prompt = "You are a helpful assistant."
+            response = claude.send_message(user_input, conversation_id, system_prompt=system_prompt)
+        else:
+            response = claude.send_message(user_input, conversation_id)
 
-        response = claude.send_message(user_input, conversation_id)
         print("Chatbot:", response)
 
 if __name__ == "__main__":
